@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,94 +71,115 @@ public class ClientController {
             }
 
             String name = client.getName();
-        
 
             Set<String> metrics;
             Set<String> users;
-            if(client.getMetrics()!=null){
-                metrics=client.getMetrics();
-            } else{
-                metrics= new HashSet<>();
+            if (client.getMetrics() != null) {
+                metrics = client.getMetrics();
+            } else {
+                metrics = new HashSet<>();
             }
 
-            if(client.getUsers()!=null){
-                users=client.getUsers();
-            }else{
-                users=new HashSet<>();
+            if (client.getUsers() != null) {
+                users = client.getUsers();
+            } else {
+                users = new HashSet<>();
             }
-         
+
             String err = clientData.addClient(name, metrics, users);
-
 
             if (err != "") {
                 System.out.println(err);
                 return Utils.exceptionCatch(null, err, "", 500);
             }
 
-            HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("Content-Type","text/plain");
-            responseHeaders.set("Grip-Hold", "stream");
-            responseHeaders.set("Grip-Channel",name);
-            return ResponseEntity.ok().headers(responseHeaders).body("{\"status\": \"creado\"}");
+            // HttpHeaders responseHeaders = new HttpHeaders();
+            // responseHeaders.set("Content-Type","text/plain");
+            // responseHeaders.set("Grip-Hold", "stream");
+            // responseHeaders.set("Grip-Channel",name);
+            return ResponseEntity.ok("{\"status\": \"creado\"}");
         } catch (Exception e) {
             e.printStackTrace();
             return Utils.exceptionCatch(e, "Error to create client", e.getMessage(), 500);
-
         }
 
     }
 
-    @PostMapping(value="/ws")
-    public ResponseEntity<?> websocket(@RequestBody String body){
+    @GetMapping(value = "/sse")
+    public ResponseEntity<?> sse(@RequestParam(required = true) List<String> clients) {
 
-        
         try {
-            System.out.print(body);
+            String channels = String.join(",", clients);
+            System.out.println("channels");
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Content-Type", "text/event-stream");
+            responseHeaders.set("Grip-Hold", "stream");
+            responseHeaders.set("Grip-Channel", channels);
+            // Utils.publishValue();
+            return ResponseEntity.ok().headers(responseHeaders).body("Stream init");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Utils.exceptionCatch(e, "Error to create client", e.getMessage(), 500);
+        }
+    }
+
+    @PostMapping(value = "/ws")
+    public ResponseEntity<?> websocket(@RequestBody String body) {
+
+        try {
             List<WebSocketEvent> inEvents = GripControl.decodeWebSocketEvents(body);
-    
-            if(inEvents!=null && inEvents.size() > 0){
-                
+
+            if (inEvents != null && inEvents.size() > 0) {
+
                 Map<String, Object> channel = new HashMap<String, Object>();
-                if(inEvents.get(0).type.equals("OPEN")){
-                    channel.put("channel", "demo");
+                if (inEvents.get(0).type.equals("OPEN")) {
+                    // channel.put("channel", client);
 
                     List<WebSocketEvent> outEvents = new ArrayList<WebSocketEvent>();
                     outEvents.add(new WebSocketEvent("OPEN"));
-                    outEvents.add(new WebSocketEvent("TEXT", "c:" +
-                            GripControl.webSocketControlMessage("subscribe", channel)));
-        
-                   String responseBody= GripControl.encodeWebSocketEvents(outEvents);
-                   System.out.println("respuesta "+responseBody);
-                   HttpHeaders responseHeaders = new HttpHeaders();
-                   responseHeaders.set("Content-Type","application/websocket-events");
-                   responseHeaders.set("Sec-WebSocket-Extensions", "grip; message-prefix=\"\"");
-                   return ResponseEntity.ok().headers(responseHeaders).body(responseBody);
+                    // outEvents.add(new WebSocketEvent("TEXT",
+                    //         "c:" + GripControl.webSocketControlMessage("subscribe", channel)));
+
+                    String responseBody = GripControl.encodeWebSocketEvents(outEvents);
+                    System.out.println("respuesta " + responseBody);
+                    HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.set("Content-Type", "application/websocket-events");
+                    responseHeaders.set("Sec-WebSocket-Extensions", "grip; message-prefix=\"\"");
+                    return ResponseEntity.ok().headers(responseHeaders).body(responseBody);
                 }
-                if(inEvents.get(0).type.equals("TEXT")){
-                    String newChanel=inEvents.get(0).content;
-                    channel.put("channel", newChanel);
+                if (inEvents.get(0).type.equals("TEXT")) {
+                    String json = inEvents.get(0).content;
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, String> map = mapper.readValue(json, Map.class);
+
+                    String action = map.get("action");
+                    String channelName = map.get("client");
+                    channel.put("channel", channelName);
+
+                    if (!action.equals("subscribe") && !action.equals("unsubscribe")) {
+                        return Utils.exceptionCatch(null, "Acción no permitida","Action not allowed", 500);
+                    }
 
                     List<WebSocketEvent> outEvents = new ArrayList<WebSocketEvent>();
                     // outEvents.add(new WebSocketEvent("OPEN"));
-                    outEvents.add(new WebSocketEvent("TEXT", "c:" +
-                            GripControl.webSocketControlMessage("subscribe", channel)));
-        
-                   String responseBody= GripControl.encodeWebSocketEvents(outEvents);
-                   System.out.println("respuesta "+responseBody);
-                   HttpHeaders responseHeaders = new HttpHeaders();
-                   responseHeaders.set("Content-Type","application/websocket-events");
-                   responseHeaders.set("Sec-WebSocket-Extensions", "grip; message-prefix=\"\"");
-                   return ResponseEntity.ok().headers(responseHeaders).body(responseBody);
-                    
+                    outEvents.add(
+                            new WebSocketEvent("TEXT", "c:" + GripControl.webSocketControlMessage(action, channel)));
+
+                    String responseBody = GripControl.encodeWebSocketEvents(outEvents);
+                    System.out.println("respuesta " + responseBody);
+                    HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.set("Content-Type", "application/websocket-events");
+                    responseHeaders.set("Sec-WebSocket-Extensions", "grip; message-prefix=\"\"");
+                    return ResponseEntity.ok().headers(responseHeaders).body(responseBody);
+
                 }
 
                 return ResponseEntity.ok("ok");
-    
-    
-            } else{
-               return  ResponseEntity.ok("No open");
+
+            } else {
+                return ResponseEntity.ok("No open");
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
             return Utils.exceptionCatch(e, "Error to create client", e.getMessage(), 500);
@@ -166,8 +188,7 @@ public class ClientController {
     }
 
     @PostMapping(value = "/api/publish/{name}")
-    public ResponseEntity<?> publish(@RequestBody Metric metric,
-    @PathVariable(name = "name") String name){
+    public ResponseEntity<?> publish(@RequestBody Metric metric, @PathVariable(name = "name") String name) {
         System.out.println("Aqui me caigo");
         System.out.println(metric.getUsername());
         List<String> channels = new ArrayList<String>();
@@ -176,15 +197,16 @@ public class ClientController {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(metric);
-            List<Format> formats = Arrays.asList(
-                (Format)new WebSocketMessageFormat(json));
+            List<Format> formats = Arrays.asList((Format) new WebSocketMessageFormat(json));
             // System.out.println("Aqui me caigo");
             // System.out.println("Aqui me caigo 2");
-            // pub.publishHttpStream(channels, json);
-            System.out.println("Aqui me caigo 3");
+            System.out.print(json);
+            json = json.replaceAll("\n", "");
+            String m = String.format("event: %s\ndata: %s\n\n", name, json);
+            pub.publishHttpStream(channels, m);
             pub.publish(channels, new Item(formats, null, null));
             return ResponseEntity.ok("publicado");
-        } catch (  PublishFailedException | JsonProcessingException e ) {
+        } catch (PublishFailedException | JsonProcessingException | UnsupportedEncodingException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
             return Utils.exceptionCatch(e, "Error to create client", e.getMessage(), 500);
@@ -202,16 +224,16 @@ public class ClientController {
 
             Set<String> metrics;
             Set<String> users;
-            if(client.getMetrics()!=null){
-                metrics=client.getMetrics();
-            } else{
-                metrics= new HashSet<>();
+            if (client.getMetrics() != null) {
+                metrics = client.getMetrics();
+            } else {
+                metrics = new HashSet<>();
             }
 
-            if(client.getUsers()!=null){
-                users=client.getUsers();
-            }else{
-                users=new HashSet<>();
+            if (client.getUsers() != null) {
+                users = client.getUsers();
+            } else {
+                users = new HashSet<>();
             }
 
             String err = clientData.updateMetricsOrUsers(name, metrics, users);
@@ -227,16 +249,16 @@ public class ClientController {
 
     @DeleteMapping(value = "/api/clients/{name}")
     @ResponseBody
-    public ResponseEntity<?> deleteClient(@PathVariable("name") String name){
+    public ResponseEntity<?> deleteClient(@PathVariable("name") String name) {
 
         try {
             if (name == "") {
                 return Utils.exceptionCatch(null, "The field name is required", "Field name not found", 400);
             }
-            
-            String err= clientData.deleteClient(name);
 
-            if (err!=""){
+            String err = clientData.deleteClient(name);
+
+            if (err != "") {
                 return Utils.exceptionCatch(null, err, "", 500);
             }
             return ResponseEntity.ok("Eliminado");
@@ -245,10 +267,10 @@ public class ClientController {
         }
     }
 
-
     @DeleteMapping(value = "/api/clients/{name}/elements")
     @ResponseBody
-    public ResponseEntity<?> deleteClientUsersOrMetrics(@RequestBody ClientData client,@PathVariable("name") String name){
+    public ResponseEntity<?> deleteClientUsersOrMetrics(@RequestBody ClientData client,
+            @PathVariable("name") String name) {
 
         try {
 
@@ -256,25 +278,23 @@ public class ClientController {
                 return Utils.exceptionCatch(null, "The field name is required", "Field name not found", 400);
             }
 
-            
-
             Set<String> metrics;
             Set<String> users;
-            if(client.getMetrics()!=null){
-                metrics=client.getMetrics();
-            } else{
-                metrics= new HashSet<>();
+            if (client.getMetrics() != null) {
+                metrics = client.getMetrics();
+            } else {
+                metrics = new HashSet<>();
             }
 
-            if(client.getUsers()!=null){
-                users=client.getUsers();
-            }else{
-                users=new HashSet<>();
+            if (client.getUsers() != null) {
+                users = client.getUsers();
+            } else {
+                users = new HashSet<>();
             }
 
-            String err=clientData.deleteClientElements(name, metrics, users);
+            String err = clientData.deleteClientElements(name, metrics, users);
 
-            if (err!=""){
+            if (err != "") {
                 return Utils.exceptionCatch(null, err, "", 500);
             }
             return ResponseEntity.ok("Elementos eliminados");
@@ -284,14 +304,14 @@ public class ClientController {
         }
     }
 
-    @GetMapping(value="/api/clients")
-    public ResponseEntity<?> getAllClients(){
+    @GetMapping(value = "/api/clients")
+    public ResponseEntity<?> getAllClients() {
 
-        List<HashMap<String,Object>> clients= new ArrayList<>();
-    
-        for(String client: clientData.getAllClients()){
-            
-            HashMap<String,Object> clientObject= new HashMap<>();
+        List<HashMap<String, Object>> clients = new ArrayList<>();
+
+        for (String client : clientData.getAllClients()) {
+
+            HashMap<String, Object> clientObject = new HashMap<>();
             clientObject.put("name", client);
             clientObject.put("metrics", clientData.getMetricsByclient(client));
             clientObject.put("users", clientData.getUsersByClient(client));
@@ -300,25 +320,24 @@ public class ClientController {
         }
 
         return ResponseEntity.ok(clients);
-        
-    }
 
+    }
 
     // @PostMapping(value = "/api/topic/{topic}")
     // @ResponseBody
     // public void createListener(@PathVariable("topic") String topic) {
 
-    //     try {
-    //         if (topic == null || topic.length() < 4) {
-    //             System.out.println("Bad request");
-    //             return;
-    //         }
-    //         KafkaConsumerUtil.StartListener(topic, template);
-    //         System.out.println("Topic created");
-    //     } catch (Exception e) {
+    // try {
+    // if (topic == null || topic.length() < 4) {
+    // System.out.println("Bad request");
+    // return;
+    // }
+    // KafkaConsumerUtil.StartListener(topic, template);
+    // System.out.println("Topic created");
+    // } catch (Exception e) {
 
-    //         throw new RuntimeException(e);
-    //     }
+    // throw new RuntimeException(e);
+    // }
 
     // }
 }
