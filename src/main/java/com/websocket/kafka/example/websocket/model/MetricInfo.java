@@ -14,7 +14,7 @@ public class MetricInfo {
     private HashMap<String,String> descriptions;
     private String dataType;
     private int max;
-    private int interval;
+    private Double interval;
 
     public MetricInfo(){}
 }
