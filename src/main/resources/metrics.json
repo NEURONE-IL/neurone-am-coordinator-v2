@@ -7,7 +7,7 @@
             "es": "Número total de documentos diferentes visitados por el participante"
         },
         "dataType": "Integer",
-        "max": 12,
+        "max": "Cantidad de documentos totales",
         "interval": 1
     },
     {
@@ -18,7 +18,7 @@
             "es": "Número de documentos relevantes recuperados por el participante"
         },
         "dataType": "Integer",
-        "max": 3,
+        "max": "Cantidad de documentos relevantes totales definidos",
         "interval": 1
     },
     {
@@ -121,11 +121,22 @@
         "interval": 0.1
     },
     {
-        "name": "pagestay ",
+        "name": "totalpagestay ",
         "alias": "Total Page Stay",
         "descriptions": {
             "en": "Total time in seconds that the participant stays in documents",
             "es": "Tiempo total en segundos que el participante permanece en documentos"
+        },
+        "dataType": "Integer",
+        "max": null,
+        "interval": 1
+    },
+    {
+        "name": "pagestay ",
+        "alias": "Page Stay",
+        "descriptions": {
+            "en": "Time in seconds that the participant stayed in the last visited document",
+            "es": "Tiempo total en segundos que el participante estuvo en el último documento visitado"
         },
         "dataType": "Integer",
         "max": null,
@@ -161,6 +172,17 @@
             "es": "Número de modificaciones realizadas a las consultas en el proceso de escritura en la etapa de búsqueda"
 		},
         "dataType": "Integer",
+        "max": null,
+        "interval": 1
+    },
+    {
+        "name": "ifquotes",
+        "alias": "If Quotes",
+        "descriptions": { 
+            "en": "Indicates if the last query made have quotes (1.0) or not (0.0)",
+            "es": "Indica si la última consulta formulada posee comillas (1.0) o no (0.0)"
+		},
+        "dataType": "Double",
         "max": null,
         "interval": 1
     }
