@@ -36,9 +36,10 @@ public class MessageListener {
     @Autowired
     private GripPubControl pub;
 
-    @KafkaListener(topics = { "totalcover", "bmrelevant", "precision" }, groupId = KafkaConstants.GROUP_ID)
+    @KafkaListener(topics = { "totalcover", "bmrelevant", "precision","writingtime","pagestay","totalpagestay","ifquotes" }, groupId = KafkaConstants.GROUP_ID)
     public void listen(Metric metric) {
 
+        System.out.println("metric:  type->"+metric.getType()+ ", user: ->"+metric.getUsername()+",value->"+metric.getValue());
         String userId = metric.getUsername();
 
         if (clientData.checkUser(userId)) {
