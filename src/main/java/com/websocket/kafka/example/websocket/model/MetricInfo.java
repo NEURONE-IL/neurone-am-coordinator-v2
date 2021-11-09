@@ -13,7 +13,7 @@ public class MetricInfo {
     private String alias;
     private HashMap<String,String> descriptions;
     private String dataType;
-    private int max;
+    private Object max;
     private Double interval;
 
     public MetricInfo(){}

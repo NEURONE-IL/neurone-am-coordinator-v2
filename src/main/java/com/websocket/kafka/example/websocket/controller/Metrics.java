@@ -45,7 +45,8 @@ public class Metrics {
     public ArrayList<MetricInfo> getMetricList(){
 
         try {
-          
+            System.out.println("METRICSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+            System.out.println(metricsList);
             return metricsList;
         } catch (Exception e) {
             e.printStackTrace();
