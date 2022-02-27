@@ -190,8 +190,8 @@
         "name": "firstquerytime",
         "alias": "First Query Time",
         "descriptions": { 
-            "en": "Indicates if the last query made have quotes (1.0) or not (0.0)",
-            "es": "Indica de forma pregresiva (cada 1 segundo aproximadamente) cuanto tiempo (en segundos) lleva el estudiante sin hacer la primera consulta"
+         
+            "es": "Indica de forma progresiva (cada 1 segundo aproximadamente) cuanto tiempo (en segundos) lleva el estudiante sin hacer la primera consulta"
 		},
         "dataType": "Double",
         "max": null,
