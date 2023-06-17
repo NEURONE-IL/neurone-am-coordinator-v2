@@ -1,23 +1,16 @@
 package com.websocket.kafka.example.websocket.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.websocket.kafka.example.websocket.clients.Client;
-import com.websocket.kafka.example.websocket.constants.KafkaConstants;
-import com.websocket.kafka.example.websocket.kafka.KafkaConsumerUtil;
-import com.websocket.kafka.example.websocket.model.ClientData;
-import com.websocket.kafka.example.websocket.model.Message;
-import com.websocket.kafka.example.websocket.model.Metric;
-import com.websocket.kafka.example.websocket.util.Utils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.fanout.gripcontrol.GripControl;
 import org.fanout.gripcontrol.GripPubControl;
-import org.fanout.gripcontrol.HttpStreamFormat;
 import org.fanout.gripcontrol.WebSocketEvent;
 import org.fanout.gripcontrol.WebSocketMessageFormat;
 import org.fanout.pubcontrol.Format;
@@ -25,11 +18,8 @@ import org.fanout.pubcontrol.Item;
 import org.fanout.pubcontrol.PublishFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,15 +30,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ch.qos.logback.classic.pattern.Util;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.websocket.kafka.example.websocket.clients.Client;
+import com.websocket.kafka.example.websocket.model.ClientData;
+import com.websocket.kafka.example.websocket.model.Metric;
+import com.websocket.kafka.example.websocket.util.Utils;
 
 @Controller
 public class ClientController {
@@ -138,7 +126,7 @@ public class ClientController {
                     List<WebSocketEvent> outEvents = new ArrayList<WebSocketEvent>();
                     outEvents.add(new WebSocketEvent("OPEN"));
                     // outEvents.add(new WebSocketEvent("TEXT",
-                    //         "c:" + GripControl.webSocketControlMessage("subscribe", channel)));
+                    // "c:" + GripControl.webSocketControlMessage("subscribe", channel)));
 
                     String responseBody = GripControl.encodeWebSocketEvents(outEvents);
                     System.out.println("respuesta " + responseBody);
@@ -157,7 +145,7 @@ public class ClientController {
                     channel.put("channel", channelName);
 
                     if (!action.equals("subscribe") && !action.equals("unsubscribe")) {
-                        return Utils.exceptionCatch(null, "Acción no permitida","Action not allowed", 500);
+                        return Utils.exceptionCatch(null, "Acción no permitida", "Action not allowed", 500);
                     }
 
                     List<WebSocketEvent> outEvents = new ArrayList<WebSocketEvent>();
@@ -190,7 +178,7 @@ public class ClientController {
     @PostMapping(value = "/api/publish/{name}")
     public ResponseEntity<?> publish(@RequestBody Metric metric, @PathVariable(name = "name") String name) {
         System.out.println("Aqui me caigo");
-        System.out.println(metric.getUsername());
+        System.out.println(metric.getUserId());
         List<String> channels = new ArrayList<String>();
         channels.add(name);
         try {

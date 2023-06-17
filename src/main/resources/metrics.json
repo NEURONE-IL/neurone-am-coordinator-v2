@@ -196,5 +196,16 @@
         "dataType": "Double",
         "max": null,
         "interval": 1
+    },
+    {
+        "name":"challengestarted",
+        "alias": "Challenge Started",
+        "descriptions": {
+            "en": "Indicates if the participant has started the challenge",
+            "es": "Indica si el participante ha iniciado el reto"
+        },
+        "max": 1,
+        "dataType": "Boolean",
+        "interval": 1
     }
 ]

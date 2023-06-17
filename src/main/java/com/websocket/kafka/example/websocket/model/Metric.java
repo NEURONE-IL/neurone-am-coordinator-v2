@@ -1,18 +1,18 @@
 package com.websocket.kafka.example.websocket.model;
 
 public class Metric {
-    
-    private String username;
+
+    private String userId;
     private Float value;
     private String type;
     private String client;
+
     /**
      * @return the client
      */
     public String getClient() {
         return client;
     }
-
 
     /**
      * @param client the client to set
@@ -21,15 +21,12 @@ public class Metric {
         this.client = client;
     }
 
-
-
     /**
      * @return the type
      */
     public String getType() {
         return type;
     }
-
 
     /**
      * @param type the type to set
@@ -38,14 +35,12 @@ public class Metric {
         this.type = type;
     }
 
-
     /**
-     * @return the username
+     * @return the userId
      */
-    public String getUsername() {
-        return username;
+    public String getUserId() {
+        return userId;
     }
-
 
     /**
      * @return the value
@@ -53,5 +48,5 @@ public class Metric {
     public Float getValue() {
         return value;
     }
-    
+
 }
