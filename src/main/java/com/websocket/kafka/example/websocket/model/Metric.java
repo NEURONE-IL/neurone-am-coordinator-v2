@@ -1,11 +1,14 @@
 package com.websocket.kafka.example.websocket.model;
 
+import java.util.Map;
+
 public class Metric {
 
     private String userId;
     private Float value;
     private String type;
     private String client;
+    private Map<String, Object> metadata;
 
     /**
      * @return the client
@@ -47,6 +50,10 @@ public class Metric {
      */
     public Float getValue() {
         return value;
+    }
+
+    public Object getMetadata() {
+        return metadata;
     }
 
 }
