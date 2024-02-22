@@ -1,11 +1,4 @@
-package com.websocket.kafka.example.websocket.configuration;
-
-import com.websocket.kafka.example.websocket.constants.KafkaConstants;
-import com.websocket.kafka.example.websocket.model.Message;
-import com.websocket.kafka.example.websocket.model.Metric;
-import com.websocket.kafka.example.websocket.model.Metric;
-import com.websocket.kafka.example.websocket.model.VisitedLink;
-import com.websocket.kafka.example.websocket.model.Metric;
+package com.coordinator.configuration;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -17,30 +10,31 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
+import com.coordinator.constants.KafkaConstants;
+import com.coordinator.model.Metric;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @EnableKafka
 @Configuration
 public class ConsumerConfiguration {
-    
+
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String,Metric> kafkaListenerContainerFactory(){
-        ConcurrentKafkaListenerContainerFactory<String,Metric> factory= new ConcurrentKafkaListenerContainerFactory<>();
+    ConcurrentKafkaListenerContainerFactory<String, Metric> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Metric> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-    
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String,Metric> consumerFactory(){
-
-        return new DefaultKafkaConsumerFactory<>(consumerConfigurations(), new StringDeserializer(), new JsonDeserializer<>(Metric.class));
+    public ConsumerFactory<String, Metric> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigurations(), new StringDeserializer(),
+                new JsonDeserializer<>(Metric.class));
     }
 
-    
     @Bean
-    public Map<String,Object> consumerConfigurations(){
+    public Map<String, Object> consumerConfigurations() {
 
         Map<String, Object> configurations = new HashMap<>();
         configurations.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaConstants.KAFKA_BROKER);
@@ -50,7 +44,4 @@ public class ConsumerConfiguration {
         configurations.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         return configurations;
     }
-
-        
-
 }

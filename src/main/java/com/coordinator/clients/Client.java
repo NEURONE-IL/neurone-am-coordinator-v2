@@ -1,9 +1,8 @@
-package com.websocket.kafka.example.websocket.clients;
+package com.coordinator.clients;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Map;

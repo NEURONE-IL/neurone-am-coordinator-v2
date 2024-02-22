@@ -1,4 +1,4 @@
-package com.websocket.kafka.example.websocket.controller;
+package com.coordinator.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -19,7 +19,6 @@ import org.fanout.pubcontrol.PublishFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,19 +29,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.coordinator.clients.Client;
+import com.coordinator.model.ClientData;
+import com.coordinator.model.Metric;
+import com.coordinator.util.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.websocket.kafka.example.websocket.clients.Client;
-import com.websocket.kafka.example.websocket.model.ClientData;
-import com.websocket.kafka.example.websocket.model.Metric;
-import com.websocket.kafka.example.websocket.util.Utils;
 
 @Controller
 public class ClientController {
-
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @Autowired
     private Client clientData;

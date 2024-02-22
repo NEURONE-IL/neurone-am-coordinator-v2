@@ -1,4 +1,4 @@
-package com.websocket.kafka.example.websocket.configuration;
+package com.coordinator.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

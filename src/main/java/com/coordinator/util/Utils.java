@@ -1,4 +1,4 @@
-package com.websocket.kafka.example.websocket.util;
+package com.coordinator.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

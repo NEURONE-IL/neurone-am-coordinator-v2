@@ -1,16 +1,15 @@
-package com.websocket.kafka.example.websocket.controller;
-
-import com.websocket.kafka.example.websocket.model.ClientData;
-import com.websocket.kafka.example.websocket.util.Utils;
+package com.coordinator.controller;
 
 import java.util.Set;
-
-import com.websocket.kafka.example.websocket.clients.Client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+
+import com.coordinator.clients.Client;
+import com.coordinator.model.ClientData;
+import com.coordinator.util.Utils;
 
 @Controller
 public class WebsocketClientController {

@@ -1,4 +1,4 @@
-package com.websocket.kafka.example.websocket.constants;
+package com.coordinator.constants;
 
 public class KafkaConstants {
     public static final String KAFKA_TOPIC = "totalcover, bmrelevanr, precision";

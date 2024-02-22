@@ -8,11 +8,11 @@
 		<version>2.4.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.websocket.kafka.example</groupId>
-	<artifactId>websocket</artifactId>
+	<groupId>com.coordinator</groupId>
+	<artifactId>coordinator</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>websocket</name>
-	<description>Example project for apache kafka and websocket integration</description>
+	<name>coordinator</name>
+	<description>Neurone AM coordinator as a componente to provide metrcs in differents protocols</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>

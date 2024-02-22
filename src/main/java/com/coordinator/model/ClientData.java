@@ -1,4 +1,4 @@
-package com.websocket.kafka.example.websocket.model;
+package com.coordinator.model;
 
 import java.util.Set;
 

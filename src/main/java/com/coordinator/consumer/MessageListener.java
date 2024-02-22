@@ -1,4 +1,4 @@
-package com.websocket.kafka.example.websocket.consumer;
+package com.coordinator.consumer;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -13,20 +13,17 @@ import org.fanout.pubcontrol.Item;
 import org.fanout.pubcontrol.PublishFailedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.coordinator.clients.Client;
+import com.coordinator.constants.KafkaConstants;
+import com.coordinator.model.Metric;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.websocket.kafka.example.websocket.clients.Client;
-import com.websocket.kafka.example.websocket.constants.KafkaConstants;
-import com.websocket.kafka.example.websocket.model.Metric;
 
 @Service
 public class MessageListener {
-    @Autowired
-    SimpMessagingTemplate template;
 
     @Autowired
     Client clientData;
@@ -65,7 +62,6 @@ public class MessageListener {
                                 + " with value " + metric.getValue() + "to channel " + client);
                         pub.publishHttpStream(channels, m);
                         pub.publish(channels, new Item(formats, null, null));
-                        // template.convertAndSend("/topic/"+client,metric);
                     } catch (PublishFailedException | JsonProcessingException | UnsupportedEncodingException e) {
                         e.printStackTrace();
                         // TODO: handle exception

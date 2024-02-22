@@ -1,9 +1,9 @@
-package com.websocket.kafka.example.websocket.configuration;
+package com.coordinator.configuration;
 
+import com.coordinator.clients.Client;
+import com.coordinator.model.MetricInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.websocket.kafka.example.websocket.clients.Client;
-import com.websocket.kafka.example.websocket.model.MetricInfo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
