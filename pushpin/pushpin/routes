@@ -1,1 +1,1 @@
-*,sockjs=/ws,sockjs_as_path=/ws localhost:8085,over_http
+*,sockjs=/sockjs,sockjs_as_path=/sockjs localhost:8085,over_http
