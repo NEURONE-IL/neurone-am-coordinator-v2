@@ -107,7 +107,7 @@ public class ClientController {
         }
     }
 
-    @PostMapping(value = "/ws")
+    @PostMapping(value = {"/ws", "/sockjs"})
     public ResponseEntity<?> websocket(@RequestBody String body) {
 
         try {
