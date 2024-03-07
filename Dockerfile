@@ -10,7 +10,7 @@ FROM openjdk:11-jdk-slim
 
 RUN mkdir /app
 
-COPY --from=build /home/maven/src/target/websocket-0.0.1-SNAPSHOT.jar /app/target/websocket-0.0.1-SNAPSHOT.jar
+COPY --from=build /home/maven/src/target/coordinator-0.0.1-SNAPSHOT.jar /app/target/coordinator-0.0.1-SNAPSHOT.jar
 WORKDIR /app
 RUN ls
-CMD ["java","-jar","target/websocket-0.0.1-SNAPSHOT.jar"]
+CMD ["java","-jar","target/coordinator-0.0.1-SNAPSHOT.jar"]
